@@ -28,7 +28,7 @@ export default function AdminPanel() {
     await addStudent(newName, newGrade, newHouse);
     setNewName("");
     setNewGrade("");
-    setNewHouse("Griffindor");
+    setNewHouse("Gryffindor");
     fetchStudents();
   };
 
