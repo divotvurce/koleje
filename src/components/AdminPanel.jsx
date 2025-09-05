@@ -6,7 +6,7 @@ export default function AdminPanel() {
   const [students, setStudents] = useState([]);
   const [newName, setNewName] = useState("");
   const [newGrade, setNewGrade] = useState("");
-  const [newHouse, setNewHouse] = useState("Griffindor");
+  const [newHouse, setNewHouse] = useState("Gryffindor");
 
   const [selectedStudent, setSelectedStudent] = useState("");
   const [pointsToAdd, setPointsToAdd] = useState("");
