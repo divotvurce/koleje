@@ -71,7 +71,7 @@ export default function AdminPanel() {
             value={newHouse}
             onChange={(e) => setNewHouse(e.target.value)}
           >
-            <option>Griffindor</option>
+            <option>Gryffindor</option>
             <option>Slytherin</option>
             <option>Hufflepuff</option>
             <option>Ravenclaw</option>
