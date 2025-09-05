@@ -47,7 +47,7 @@ export default function AddStudent() {
         onChange={(e) => setHouse(e.target.value)}
         className="mb-4 p-2 rounded text-black w-full"
       >
-        <option value="Griffindor">Griffindor</option>
+        <option value="Gryffindor">Gryffindor</option>
         <option value="Slytherin">Slytherin</option>
         <option value="Hufflepuff">Hufflepuff</option>
         <option value="Ravenclaw">Ravenclaw</option>
