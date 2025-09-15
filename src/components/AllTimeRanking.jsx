@@ -7,6 +7,7 @@ export default function AllTimeRanking() {
   useEffect(() => {
     const fetchRanking = async () => {
       const students = await getAllTimeRanking();
+            setRanking(students.slice(0, 20));
     };
     fetchRanking();
   }, []);

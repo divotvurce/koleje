@@ -19,7 +19,7 @@ export default function AllTimeByHouse() {
       const results = housesData.map((house) => {
         const studentsInHouse = students
           .filter((s) => s.house === house.name)
-          .sort((a, b) => (b.points || 0) - (a.points || 0));
+          .sort((a, b) => a.name.localeCompare(b.name));
 
         return {
           ...house,

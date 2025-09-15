@@ -95,7 +95,7 @@ export async function resetWeeklyPoints() {
 export async function getAllTimeRanking() {
   try {
     const studentsRef = collection(db, "students");
-    const q = query(studentsRef, orderBy("points", "desc"), limit(20));
+    const q = query(studentsRef, orderBy("points", "desc"));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (err) {
