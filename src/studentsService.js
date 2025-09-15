@@ -92,11 +92,10 @@ export async function resetWeeklyPoints() {
   }
 }
 
-// Načtení všech studentů seřazených podle celkových bodů
 export async function getAllTimeRanking() {
   try {
     const studentsRef = collection(db, "students");
-    const q = query(studentsRef, orderBy("points", "desc"));
+    const q = query(studentsRef, orderBy("points", "desc"), limit(20));
     const snapshot = await getDocs(q);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (err) {
