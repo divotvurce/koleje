@@ -24,7 +24,7 @@ function App() {
 
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-5xl font-black text-purple-800 drop-shadow-lg">
-            English Challenge
+            BeerBros Challenge
           </h1>
 
           {/* Přihlášení */}
