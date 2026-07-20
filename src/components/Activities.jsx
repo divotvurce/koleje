@@ -2,18 +2,18 @@
 import React from "react";
 
 const dailyActivities = [
-  { name: "Cvičení / gym", points: 1 },
-  { name: "Běh (min. 4 km)", points: 1 },
+  { name: "Cvičení/gym/boulder", points: 1 },
+  { name: "Běh/plavání/fotbal (min. 4 km)", points: 1 },
 ];
 
 const weeklyChallenges = [
-  { name: "Nejvíce kroků za týden", points: 5 },
+  { name: "Nejrychlejších 400m na oválu", points: 5 },
 ];
 
 const monthlyAchievements = [
-  { name: "Největší úbytek tuku", points: 10 },
-  { name: "Největší přírůstek svalů", points: 10 },
-  { name: "Největší úbytek viscerálního tuku", points: 10 },
+  { name: "Master of Deathlifts: Největší úbytek tuku", points: 10 },
+  { name: "The Boy Who Lifted: Největší přírůstek svalů", points: 10 },
+  { name: "Patronus of Consistency: Největší úbytek viscerálního tuku", points: 10 },
 ];
 
 function ActivitySection({ title, description, color, activities }) {

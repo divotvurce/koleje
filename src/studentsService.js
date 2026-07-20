@@ -2,12 +2,11 @@ import { collection, addDoc, updateDoc, doc, getDoc, getDocs, query, orderBy, li
 import { db } from "./firebase";
 
 // Přidání nového studenta
-export async function addStudent(name, grade, house) {
+export async function addStudent(name, house) {
   try {
     const studentsRef = collection(db, "students");
     const docRef = await addDoc(studentsRef, {
       name,
-      grade,
       house,
       points: 0,
       weeklyPoints: 0,

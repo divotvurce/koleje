@@ -57,9 +57,11 @@ function App() {
         {!adminMode && (
           <>
             <HouseBoard />
+            <img className="mx-auto my-6" src="/images/swoldy.PNG" alt="Description" />
             <AllTimeRanking />
             <AllTimeByHouse />
             <WeeklyTop />
+            <img className="mx-auto my-6" src="/images/gymbros.png" alt="Description" />
             <PointsLog />
             <ActivitiesList />
           </>

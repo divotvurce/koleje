@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { getAllStudents } from "../studentsService"; // stáhne všechny studenty
 
 const housesData = [
-  { name: "Gryffindor", logo: "🦁", bg: "bg-red-800", color: "text-red-500" },
-  { name: "Slytherin", logo: "🐍", bg: "bg-green-800", color: "text-green-500" },
-  { name: "Hufflepuff", logo: "🦡", bg: "bg-yellow-700", color: "text-yellow-400" },
-  { name: "Ravenclaw", logo: "🐦‍⬛", bg: "bg-blue-800", color: "text-blue-500" },
+  { name: "GryfFITdor", logo: "🦁", bg: "bg-red-800", color: "text-red-500" },
+  { name: "sLIFTerin", logo: "🐍", bg: "bg-green-800", color: "text-green-500" },
+  { name: "HuffleBUFF", logo: "🦡", bg: "bg-yellow-700", color: "text-yellow-400" },
+  { name: "RavenGLOW", logo: "🐦‍⬛", bg: "bg-blue-800", color: "text-blue-500" },
 ];
 
 export default function AllTimeByHouse() {

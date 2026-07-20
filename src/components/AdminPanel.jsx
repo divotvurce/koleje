@@ -5,7 +5,6 @@ import { addStudent, addPoints, getAllStudents, resetWeeklyPoints } from "../stu
 export default function AdminPanel() {
   const [students, setStudents] = useState([]);
   const [newName, setNewName] = useState("");
-  const [newGrade, setNewGrade] = useState("");
   const [newHouse, setNewHouse] = useState("Gryffindor");
 
   const [selectedStudent, setSelectedStudent] = useState("");
@@ -24,10 +23,9 @@ export default function AdminPanel() {
 
   // Přidání nového studenta
   const handleAddStudent = async () => {
-    if (!newName || !newGrade) return alert("Vyplň jméno a třídu");
-    await addStudent(newName, newGrade, newHouse);
+    if (!newName) return alert("Vyplň jméno");
+    await addStudent(newName, newHouse);
     setNewName("");
-    setNewGrade("");
     setNewHouse("Gryffindor");
     fetchStudents();
   };
@@ -60,21 +58,15 @@ export default function AdminPanel() {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />
-          <input
-            className="p-2 rounded-lg flex-1 text-black"
-            placeholder="Třída"
-            value={newGrade}
-            onChange={(e) => setNewGrade(e.target.value)}
-          />
           <select
             className="p-2 rounded-lg flex-1 text-black"
             value={newHouse}
             onChange={(e) => setNewHouse(e.target.value)}
           >
-            <option>Gryffindor</option>
-            <option>Slytherin</option>
-            <option>Hufflepuff</option>
-            <option>Ravenclaw</option>
+            <option>GryfFITdor</option>
+            <option>sLIFTerin</option>
+            <option>HuffleBUFF</option>
+            <option>RavenGLOW</option>
           </select>
           <button
             className="bg-purple-800 hover:bg-purple-900 text-white px-4 py-2 rounded-lg"
