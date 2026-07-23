@@ -5,7 +5,7 @@ import { addStudent, addPoints, getAllStudents, resetWeeklyPoints } from "../stu
 export default function AdminPanel() {
   const [students, setStudents] = useState([]);
   const [newName, setNewName] = useState("");
-  const [newHouse, setNewHouse] = useState("Gryffindor");
+  const [newHouse, setNewHouse] = useState("GryfFITdor");
 
   const [selectedStudent, setSelectedStudent] = useState("");
   const [pointsToAdd, setPointsToAdd] = useState("");

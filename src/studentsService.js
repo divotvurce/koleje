@@ -20,11 +20,20 @@ export async function addStudent(name, house) {
 }
 
 // Přidání bodů studentovi
-export async function addPoints(studentId, pointsToAdd, reason) {
+export async function addPoints(
+  studentId,
+  pointsToAdd,
+  reason,
+  customDate = null,
+  activities = []
+) {
   try {
     const studentRef = doc(db, "students", studentId);
     const studentSnap = await getDoc(studentRef);
-    if (!studentSnap.exists()) throw new Error("Student neexistuje");
+
+    if (!studentSnap.exists()) {
+      throw new Error("Student neexistuje");
+    }
 
     const currentPoints = studentSnap.data().points || 0;
     const currentWeekly = studentSnap.data().weeklyPoints || 0;
@@ -34,13 +43,28 @@ export async function addPoints(studentId, pointsToAdd, reason) {
       weeklyPoints: currentWeekly + pointsToAdd
     });
 
-    const logsRef = collection(db, "pointsLogs");
-    await addDoc(logsRef, {
-      studentId,
-      points: pointsToAdd,
-      reason: reason || "",
-      date: new Date()
-    });
+const logsRef = collection(db, "pointsLogs");
+
+const activityDate = customDate
+  ? (() => {
+      const [year, month, day] = customDate.split("-");
+
+      return new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day)
+      );
+    })()
+  : new Date();
+
+await addDoc(logsRef, {
+  studentId,
+  points: pointsToAdd,
+  activities,
+  reason: reason || "",
+  date: activityDate
+});
+
   } catch (err) {
     console.error("Chyba při přidávání bodů:", err);
     throw err;
