@@ -3,7 +3,7 @@ Updaty do budoucna:
 2) streak leaderboard
 3) statistiky pro jednotlivé hráče např 100 běh, 20 cvičení nebo 67 % běh, 33 % gym. 
 4) upravit Měsíční inbody - přidat aktuální období plus držitele ocenění 
-5) hlášky po přidání bodů DONE
+5) hlášky po přidání bodů DONE 
 
 Opravy:
 1) nefunguje přidávání bodů na mobil DONE

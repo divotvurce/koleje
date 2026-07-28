@@ -10,6 +10,8 @@ import AllTimeRanking from "./components/AllTimeRanking";
 import AllTimeByHouse from "./components/AllTimeByHouse";
 import ActivitiesList from "./components/Activities";
 import DailyActivities from "./components/DailyActivities";
+import ActivityCalendar from "./components/ActivityCalendar";
+import StreakLeaderboard from "./components/StreakLeaderboard";
 
 function App() {
   const { user, loading } = useAuth();
@@ -99,6 +101,8 @@ function App() {
             <PointsLog />
             <ActivitiesList />
             <DailyActivities />
+            <ActivityCalendar />
+            <StreakLeaderboard />
           </>
         )}
 

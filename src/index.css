@@ -1,3 +1,58 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* CALENDAR */
+
+.fitness-calendar {
+  width: 100% !important;
+  background: #111827 !important;
+  border: none !important;
+  color: white;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.fitness-calendar .react-calendar__navigation button {
+  color: white;
+  font-size: 18px;
+}
+
+.fitness-calendar .react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #9ca3af;
+}
+
+.fitness-calendar .react-calendar__tile {
+  height: 60px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.fitness-calendar .react-calendar__tile:hover {
+  opacity: 0.85;
+}
+
+.day-zero {
+  background: white !important;
+  color: black !important;
+}
+
+.day-one {
+  background: #86efac !important;
+  color: black !important;
+}
+
+.day-two {
+  background: #15803d !important;
+  color: white !important;
+}
+
+.react-calendar__tile--now {
+  border: 2px solid #facc15 !important;
+}
+
+.react-calendar__tile--active {
+  background: inherit !important;
+}
