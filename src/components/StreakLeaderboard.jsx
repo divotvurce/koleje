@@ -6,6 +6,7 @@ import {
 
 import { db } from "../firebase";
 import { getAllStudents } from "../studentsService";
+import { getPlayerBadges } from "../utils/badges";
 
 export default function StreakLeaderboard() {
   const [players, setPlayers] = useState([]);
@@ -32,13 +33,18 @@ export default function StreakLeaderboard() {
           (log) => log.studentId === student.id
         );
 
-      const result = calculateStats(playerLogs);
+const result = calculateStats(playerLogs);
 
-      streakData.push({
-        ...student,
-        ...result
-      });
+const badges = getPlayerBadges(result);
+
+streakData.push({
+  ...student,
+  ...result,
+  badges
+});
+
     }
+    
 
     streakData.sort(
       (a, b) => b.currentStreak - a.currentStreak
@@ -250,6 +256,17 @@ const calculateStats = (logs) => {
           <h3 className="text-xl font-bold mb-4">
             {selectedPlayer.name}
           </h3>
+          <div className="flex flex-wrap gap-2 mb-6">
+  {stats.badges?.map((badge) => (
+    <div
+      key={badge.id}
+      title={badge.description}
+      className="bg-gray-700 px-3 py-2 rounded-xl text-sm"
+    >
+      {badge.icon} {badge.name}
+    </div>
+  ))}
+</div>
 
           <div className="space-y-3 text-lg">
 
@@ -282,6 +299,20 @@ const calculateStats = (logs) => {
               </span>
             </div>
 
+            <div>
+  🏋️ Gym:
+  <span className="font-bold ml-2">
+    {stats.gymCount}
+  </span>
+</div>
+
+<div>
+  🏃 Běhy:
+  <span className="font-bold ml-2">
+    {stats.runCount}
+  </span>
+</div>
+            
           </div>
 
         </div>

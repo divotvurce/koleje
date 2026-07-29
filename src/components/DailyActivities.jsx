@@ -3,6 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { getAllStudents, addPoints } from "../studentsService";
 
+import {
+  collection,
+  getDocs
+} from "firebase/firestore";
+
+import { db } from "../firebase";
+
 const motivationalQuotes = [
   "💪 Go girl!",
   "⚡ Good job, He Who Must Not Be Shamed.",
@@ -33,14 +40,96 @@ export default function DailyActivities() {
   new Date().toISOString().split("T")[0]
 );
 
-  useEffect(() => {
-    loadStudents();
-  }, []);
+useEffect(() => {
+  loadStudents();
+  loadAchievements();
+  calculateInBodyPeriod();
+}, []);
 
   const loadStudents = async () => {
     const data = await getAllStudents();
     setStudents(data);
   };
+
+  const calculateInBodyPeriod = () => {
+  const now = new Date();
+
+  const startMonth =
+    now.getMonth() + 1;
+
+  const nextMonth =
+    startMonth === 12
+      ? 1
+      : startMonth + 1;
+
+  setInBodyPeriod(
+    `1.${startMonth}. - 1.${nextMonth}.`
+  );
+};
+
+const [achievementHolders, setAchievementHolders] =
+  useState({
+    deathlifts: "-",
+    lifted: "-",
+    consistency: "-"
+  });
+
+const [inBodyPeriod, setInBodyPeriod] =
+  useState("");
+
+const loadAchievements = async () => {
+  const students = await getAllStudents();
+
+  const studentMap = {};
+
+  students.forEach((s) => {
+    studentMap[s.id] = s.name;
+  });
+
+  const snapshot = await getDocs(
+    collection(db, "pointsLogs")
+  );
+
+  const logs = snapshot.docs.map((d) =>
+    d.data()
+  );
+
+  const findHolder = (achievement) => {
+    const matches = logs.filter(
+      (log) =>
+        log.reason &&
+        log.reason.includes(
+          achievement
+        )
+    );
+
+    if (!matches.length) return "-";
+
+    matches.sort(
+      (a, b) =>
+        b.date.toDate() -
+        a.date.toDate()
+    );
+
+    return (
+      studentMap[
+        matches[0].studentId
+      ] || "-"
+    );
+  };
+
+  setAchievementHolders({
+    deathlifts: findHolder(
+      "Master of Deathlifts"
+    ),
+    lifted: findHolder(
+      "The Boy Who Lifted"
+    ),
+    consistency: findHolder(
+      "Patronus of Consistency"
+    )
+  });
+};
 
   const toggleActivity = (activityId) => {
     setSelectedActivities((prev) =>
@@ -167,25 +256,78 @@ const handleSubmit = async () => {
         </button>
       </div>
 
-      {/* InBody */}
-      <div className="bg-gray-900 p-6 rounded-3xl shadow-xl flex flex-col justify-center">
-        <h2 className="text-2xl font-bold text-yellow-400 mb-4">
-          📊 Měsíční InBody
-        </h2>
+  {/* InBody + Achievements */}
 
-        <p className="text-gray-300 mb-6">
-          Po každém měření nahraj své výsledky do sdíleného formuláře.
-        </p>
+<div className="bg-gray-900 p-6 rounded-3xl shadow-xl">
 
-        <a
-          href="https://docs.google.com/spreadsheets/d/15tSMgJ0cN9pYnLnXYE_V668NtRHwtZWoR_NmsFQenEk/edit?usp=sharing"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-center py-4 rounded-xl"
-        >
-          Otevřít InBody tabulku
-        </a>
+  <h2 className="text-2xl font-bold text-yellow-400 mb-4">
+    📊 Monthly Challenges
+  </h2>
+
+  <div className="bg-gray-800 rounded-xl p-4 mb-6">
+    <div className="text-sm text-gray-400">
+      Aktuální InBody období
+    </div>
+
+    <div className="text-xl font-bold text-yellow-300">
+      {inBodyPeriod}
+    </div>
+  </div>
+
+  <div className="bg-gray-800 rounded-xl p-4 mb-6">
+    <h3 className="font-bold text-lg mb-3">
+      🏆 Aktuální držitelé
+    </h3>
+
+    <div className="space-y-2">
+
+      <div className="flex justify-between">
+        <span>
+          💀 Master of Deathlifts
+        </span>
+
+        <span className="font-bold text-yellow-300">
+          {achievementHolders.deathlifts}
+        </span>
       </div>
+
+      <div className="flex justify-between">
+        <span>
+          🏋️ The Boy Who Lifted
+        </span>
+
+        <span className="font-bold text-yellow-300">
+          {achievementHolders.lifted}
+        </span>
+      </div>
+
+      <div className="flex justify-between">
+        <span>
+          🔥 Patronus of Consistency
+        </span>
+
+        <span className="font-bold text-yellow-300">
+          {achievementHolders.consistency}
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <p className="text-gray-300 mb-6">
+    Po každém měření nahraj své výsledky do sdílené tabulky.
+  </p>
+
+  <a
+    href="https://docs.google.com/spreadsheets/d/15tSMgJ0cN9pYnLnXYE_V668NtRHwtZWoR_NmsFQenEk/edit?usp=sharing"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="block bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-center py-4 rounded-xl"
+  >
+    Otevřít InBody tabulku
+  </a>
+
+</div>
 
     </div>
   );
