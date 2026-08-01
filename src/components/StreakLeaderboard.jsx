@@ -90,6 +90,7 @@ const calculateStats = (logs) => {
       consistency: 0,
       gymCount: 0,
       runCount: 0,
+      workoutRatio: 0, // Fallback pro prázdné logy
     };
   }
 
@@ -100,7 +101,6 @@ const calculateStats = (logs) => {
   // -------------------
   // LONGEST STREAK
   // -------------------
-
   let longestStreak = 1;
   let streak = 1;
 
@@ -123,7 +123,6 @@ const calculateStats = (logs) => {
   // -------------------
   // CURRENT STREAK
   // -------------------
-
   let currentStreak = 1;
 
   for (
@@ -145,11 +144,6 @@ const calculateStats = (logs) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const yesterday = new Date(today);
-  yesterday.setDate(
-    yesterday.getDate() - 1
-  );
-
   const lastDate =
     dates[dates.length - 1];
 
@@ -159,17 +153,13 @@ const calculateStats = (logs) => {
         (1000 * 60 * 60 * 24)
     );
 
-  // pokud poslední aktivita není dnes ani včera,
-  // streak se přeruší
-
   if (daysSinceLast > 1) {
     currentStreak = 0;
   }
 
   // -------------------
-  // CONSISTENCY
+  // CONSISTENCY & RATIO
   // -------------------
-
   const firstDate = dates[0];
 
   const totalDays =
@@ -185,7 +175,6 @@ const calculateStats = (logs) => {
   // -------------------
   // ACTIVITY STATS
   // -------------------
-
   let gymCount = 0;
   let runCount = 0;
 
@@ -205,6 +194,12 @@ const calculateStats = (logs) => {
     }
   });
 
+  // 💡 ZDE SPOČÍTÁME CELKOVÝ POMĚR AKTIVIT NA DNY (v %)
+  const totalWorkouts = gymCount + runCount;
+  const workoutRatio = Math.round(
+    (totalWorkouts / totalDays) * 100
+  );
+
   return {
     currentStreak,
     longestStreak,
@@ -213,6 +208,7 @@ const calculateStats = (logs) => {
     consistency,
     gymCount,
     runCount,
+    workoutRatio, // 👈 Přidáno do returnu!
   };
 };
 
