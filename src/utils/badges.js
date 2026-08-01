@@ -30,6 +30,7 @@ else if (stats.consistency >= 50) {
   });
 }
 
+  // GymSesh
 if (stats.gymCount >= 100) {
   badges.push({
     id: "deathlift",
@@ -75,7 +76,7 @@ else if (stats.gymCount >= 10) {
       "10 gym aktivit"
   });
 }
-
+  // RunSesh
 if (stats.runCount >= 100) {
   badges.push({
     id: "flash",
@@ -121,7 +122,7 @@ else if (stats.runCount >= 10) {
       "10 běhů"
   });
 }
-
+  // Streaky
 if (stats.longestStreak >= 100) {
   badges.push({
     id: "immortal",
