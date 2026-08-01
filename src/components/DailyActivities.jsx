@@ -32,21 +32,27 @@ const activities = [
   },
 ];
 
-const [isSubmitting, setIsSubmitting] = useState(false);
-
 export default function DailyActivities() {
+  // ✅ Všechny Hooky musí být ZDE na začátku komponenty:
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState("");
   const [selectedActivities, setSelectedActivities] = useState([]);
   const [selectedDate, setSelectedDate] = useState(
-  new Date().toISOString().split("T")[0]
-);
+    new Date().toISOString().split("T")[0]
+  );
+  const [achievementHolders, setAchievementHolders] = useState({
+    deathlifts: "-",
+    lifted: "-",
+    consistency: "-"
+  });
+  const [inBodyPeriod, setInBodyPeriod] = useState("");
 
-useEffect(() => {
-  loadStudents();
-  loadAchievements();
-  calculateInBodyPeriod();
-}, []);
+  useEffect(() => {
+    loadStudents();
+    loadAchievements();
+    calculateInBodyPeriod();
+  }, []);
 
   const loadStudents = async () => {
     const data = await getAllStudents();
@@ -54,84 +60,42 @@ useEffect(() => {
   };
 
   const calculateInBodyPeriod = () => {
-  const now = new Date();
+    const now = new Date();
+    const startMonth = now.getMonth() + 1;
+    const nextMonth = startMonth === 12 ? 1 : startMonth + 1;
 
-  const startMonth =
-    now.getMonth() + 1;
-
-  const nextMonth =
-    startMonth === 12
-      ? 1
-      : startMonth + 1;
-
-  setInBodyPeriod(
-    `1.${startMonth}. - 1.${nextMonth}.`
-  );
-};
-
-const [achievementHolders, setAchievementHolders] =
-  useState({
-    deathlifts: "-",
-    lifted: "-",
-    consistency: "-"
-  });
-
-const [inBodyPeriod, setInBodyPeriod] =
-  useState("");
-
-const loadAchievements = async () => {
-  const students = await getAllStudents();
-
-  const studentMap = {};
-
-  students.forEach((s) => {
-    studentMap[s.id] = s.name;
-  });
-
-  const snapshot = await getDocs(
-    collection(db, "pointsLogs")
-  );
-
-  const logs = snapshot.docs.map((d) =>
-    d.data()
-  );
-
-  const findHolder = (achievement) => {
-    const matches = logs.filter(
-      (log) =>
-        log.reason &&
-        log.reason.includes(
-          achievement
-        )
-    );
-
-    if (!matches.length) return "-";
-
-    matches.sort(
-      (a, b) =>
-        b.date.toDate() -
-        a.date.toDate()
-    );
-
-    return (
-      studentMap[
-        matches[0].studentId
-      ] || "-"
-    );
+    setInBodyPeriod(`1.${startMonth}. - 1.${nextMonth}.`);
   };
 
-  setAchievementHolders({
-    deathlifts: findHolder(
-      "Master of Deathlifts"
-    ),
-    lifted: findHolder(
-      "The Boy Who Lifted"
-    ),
-    consistency: findHolder(
-      "Patronus of Consistency"
-    )
-  });
-};
+  const loadAchievements = async () => {
+    const students = await getAllStudents();
+    const studentMap = {};
+
+    students.forEach((s) => {
+      studentMap[s.id] = s.name;
+    });
+
+    const snapshot = await getDocs(collection(db, "pointsLogs"));
+    const logs = snapshot.docs.map((d) => d.data());
+
+    const findHolder = (achievement) => {
+      const matches = logs.filter(
+        (log) => log.reason && log.reason.includes(achievement)
+      );
+
+      if (!matches.length) return "-";
+
+      matches.sort((a, b) => b.date.toDate() - a.date.toDate());
+
+      return studentMap[matches[0].studentId] || "-";
+    };
+
+    setAchievementHolders({
+      deathlifts: findHolder("Master of Deathlifts"),
+      lifted: findHolder("The Boy Who Lifted"),
+      consistency: findHolder("Patronus of Consistency")
+    });
+  };
 
   const toggleActivity = (activityId) => {
     setSelectedActivities((prev) =>
@@ -141,60 +105,59 @@ const loadAchievements = async () => {
     );
   };
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
 
-  if (isSubmitting) return;
+    setIsSubmitting(true);
 
-  setIsSubmitting(true);
+    try {
+      console.log("BUTTON CLICKED");
 
-  try {
-    console.log("BUTTON CLICKED");
+      if (!selectedStudent) {
+        alert("Vyber hráče");
+        return;
+      }
 
-    if (!selectedStudent) {
-      alert("Vyber hráče");
-      return;
+      const totalPoints = selectedActivities.reduce((sum, activityId) => {
+        const activity = activities.find((a) => a.id === activityId);
+        return sum + activity.points;
+      }, 0);
+
+      if (totalPoints === 0) {
+        alert("Vyber alespoň jednu aktivitu");
+        return;
+      }
+
+      console.log({
+        selectedStudent,
+        selectedActivities,
+        selectedDate,
+        totalPoints
+      });
+
+      await addPoints(
+        selectedStudent,
+        totalPoints,
+        `Denní aktivita: ${selectedActivities.join(", ")}`,
+        selectedDate,
+        selectedActivities
+      );
+
+      const randomQuote =
+        motivationalQuotes[
+          Math.floor(Math.random() * motivationalQuotes.length)
+        ];
+
+      alert(`Připsáno ${totalPoints} bodů!\n\n${randomQuote}`);
+
+      setSelectedActivities([]);
+    } catch (err) {
+      console.error(err);
+      alert(`ERROR: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    const totalPoints = selectedActivities.reduce((sum, activityId) => {
-      const activity = activities.find((a) => a.id === activityId);
-      return sum + activity.points;
-    }, 0);
-
-    if (totalPoints === 0) {
-      alert("Vyber alespoň jednu aktivitu");
-      return;
-    }
-
-    console.log({
-      selectedStudent,
-      selectedActivities,
-      selectedDate,
-      totalPoints
-    });
-
-    await addPoints(
-      selectedStudent,
-      totalPoints,
-      `Denní aktivita: ${selectedActivities.join(", ")}`,
-      selectedDate,
-      selectedActivities
-    );
-
-    const randomQuote =
-      motivationalQuotes[
-        Math.floor(Math.random() * motivationalQuotes.length)
-      ];
-
-    alert(`Připsáno ${totalPoints} bodů!\n\n${randomQuote}`);
-
-    setSelectedActivities([]);
-} catch (err) {
-  console.error(err);
-  alert(`ERROR: ${err.message}`);
-} finally {
-  setIsSubmitting(false);
-}
-};
+  };
 
   return (
     <div className="grid md:grid-cols-2 gap-6 my-10">
@@ -223,14 +186,14 @@ const handleSubmit = async () => {
           ))}
         </select>
 
-<div className="overflow-hidden">
-  <input
-    type="date"
-    value={selectedDate}
-    onChange={(e) => setSelectedDate(e.target.value)}
-    className="block w-full min-w-0 box-border p-3 rounded-lg text-black"
-  />
-</div>
+        <div className="overflow-hidden mb-4">
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="block w-full min-w-0 box-border p-3 rounded-lg text-black"
+          />
+        </div>
 
         <div className="space-y-3 mb-5">
           {activities.map((activity) => (
@@ -257,93 +220,77 @@ const handleSubmit = async () => {
           ))}
         </div>
 
-    <button
-  onClick={handleSubmit}
-  disabled={isSubmitting}
-  className={`w-full py-3 rounded-xl font-bold ${
-    isSubmitting
-      ? "bg-gray-600 cursor-not-allowed"
-      : "bg-green-600 hover:bg-green-700"
-  }`}
->
-  {isSubmitting
-    ? "Ukládám..."
-    : "Přidat dnešní body"}
-</button>
+        <button
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className={`w-full py-3 rounded-xl font-bold ${
+            isSubmitting
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700"
+          }`}
+        >
+          {isSubmitting ? "Ukládám..." : "Přidat dnešní body"}
+        </button>
       </div>
 
-  {/* InBody + Achievements */}
+      {/* InBody + Achievements */}
+      <div className="bg-gray-900 p-6 rounded-3xl shadow-xl">
+        <h2 className="text-2xl font-bold text-yellow-400 mb-4">
+          📊 Monthly Challenges
+        </h2>
 
-<div className="bg-gray-900 p-6 rounded-3xl shadow-xl">
+        <div className="bg-gray-800 rounded-xl p-4 mb-6">
+          <div className="text-sm text-gray-400">
+            Aktuální InBody období
+          </div>
 
-  <h2 className="text-2xl font-bold text-yellow-400 mb-4">
-    📊 Monthly Challenges
-  </h2>
+          <div className="text-xl font-bold text-yellow-300">
+            {inBodyPeriod}
+          </div>
+        </div>
 
-  <div className="bg-gray-800 rounded-xl p-4 mb-6">
-    <div className="text-sm text-gray-400">
-      Aktuální InBody období
-    </div>
+        <div className="bg-gray-800 rounded-xl p-4 mb-6">
+          <h3 className="font-bold text-lg mb-3">
+            🏆 Aktuální držitelé
+          </h3>
 
-    <div className="text-xl font-bold text-yellow-300">
-      {inBodyPeriod}
-    </div>
-  </div>
+          <div className="space-y-2">
+            <div className="flex justify-between">
+              <span>💀 Master of Deathlifts</span>
+              <span className="font-bold text-yellow-300">
+                {achievementHolders.deathlifts}
+              </span>
+            </div>
 
-  <div className="bg-gray-800 rounded-xl p-4 mb-6">
-    <h3 className="font-bold text-lg mb-3">
-      🏆 Aktuální držitelé
-    </h3>
+            <div className="flex justify-between">
+              <span>🏋️ The Boy Who Lifted</span>
+              <span className="font-bold text-yellow-300">
+                {achievementHolders.lifted}
+              </span>
+            </div>
 
-    <div className="space-y-2">
+            <div className="flex justify-between">
+              <span>🔥 Patronus of Consistency</span>
+              <span className="font-bold text-yellow-300">
+                {achievementHolders.consistency}
+              </span>
+            </div>
+          </div>
+        </div>
 
-      <div className="flex justify-between">
-        <span>
-          💀 Master of Deathlifts
-        </span>
+        <p className="text-gray-300 mb-6">
+          Po každém měření nahraj své výsledky do sdílené tabulky.
+        </p>
 
-        <span className="font-bold text-yellow-300">
-          {achievementHolders.deathlifts}
-        </span>
+        <a
+          href="https://docs.google.com/spreadsheets/d/15tSMgJ0cN9pYnLnXYE_V668NtRHwtZWoR_NmsFQenEk/edit?usp=sharing"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-center py-4 rounded-xl"
+        >
+          Otevřít InBody tabulku
+        </a>
       </div>
-
-      <div className="flex justify-between">
-        <span>
-          🏋️ The Boy Who Lifted
-        </span>
-
-        <span className="font-bold text-yellow-300">
-          {achievementHolders.lifted}
-        </span>
-      </div>
-
-      <div className="flex justify-between">
-        <span>
-          🔥 Patronus of Consistency
-        </span>
-
-        <span className="font-bold text-yellow-300">
-          {achievementHolders.consistency}
-        </span>
-      </div>
-
-    </div>
-  </div>
-
-  <p className="text-gray-300 mb-6">
-    Po každém měření nahraj své výsledky do sdílené tabulky.
-  </p>
-
-  <a
-    href="https://docs.google.com/spreadsheets/d/15tSMgJ0cN9pYnLnXYE_V668NtRHwtZWoR_NmsFQenEk/edit?usp=sharing"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="block bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-center py-4 rounded-xl"
-  >
-    Otevřít InBody tabulku
-  </a>
-
-</div>
 
     </div>
   );
