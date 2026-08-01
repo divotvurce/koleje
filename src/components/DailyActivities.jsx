@@ -32,6 +32,8 @@ const activities = [
   },
 ];
 
+const [isSubmitting, setIsSubmitting] = useState(false);
+
 export default function DailyActivities() {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState("");
@@ -140,6 +142,11 @@ const loadAchievements = async () => {
   };
 
 const handleSubmit = async () => {
+
+  if (isSubmitting) return;
+
+  setIsSubmitting(true);
+
   try {
     console.log("BUTTON CLICKED");
 
@@ -181,10 +188,12 @@ const handleSubmit = async () => {
     alert(`Připsáno ${totalPoints} bodů!\n\n${randomQuote}`);
 
     setSelectedActivities([]);
-  } catch (err) {
-    console.error(err);
-    alert(`ERROR: ${err.message}`);
-  }
+} catch (err) {
+  console.error(err);
+  alert(`ERROR: ${err.message}`);
+} finally {
+  setIsSubmitting(false);
+}
 };
 
   return (
@@ -248,12 +257,19 @@ const handleSubmit = async () => {
           ))}
         </div>
 
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-xl font-bold"
-        >
-          Přidat dnešní body
-        </button>
+    <button
+  onClick={handleSubmit}
+  disabled={isSubmitting}
+  className={`w-full py-3 rounded-xl font-bold ${
+    isSubmitting
+      ? "bg-gray-600 cursor-not-allowed"
+      : "bg-green-600 hover:bg-green-700"
+  }`}
+>
+  {isSubmitting
+    ? "Ukládám..."
+    : "Přidat dnešní body"}
+</button>
       </div>
 
   {/* InBody + Achievements */}
